@@ -2721,8 +2721,10 @@ class Storage : base::NoCopy, public base::threading::ThreadSafe {
     setApplicationArguments(argc, const_cast<char**>(argv));
   }
 };
-extern ELPP_EXPORT base::type::StoragePointer elStorage;
-#define ELPP el::base::elStorage
+//extern ELPP_EXPORT base::type::StoragePointer elStorage;
+el::base::type::StoragePointer& GetStorage();
+#define ELPP el::base::GetStorage()
+//#define ELPP el::base::elStorage
 class DefaultLogDispatchCallback : public LogDispatchCallback {
  protected:
   void handle(const LogDispatchData* data);
@@ -2887,9 +2889,16 @@ return *this;\
   ELPP_SIMPLE_LOG(float)
   ELPP_SIMPLE_LOG(double)
   ELPP_SIMPLE_LOG(char*)
-  ELPP_SIMPLE_LOG(const char*)
+  //ELPP_SIMPLE_LOG(const char*)
   ELPP_SIMPLE_LOG(const void*)
   ELPP_SIMPLE_LOG(long double)
+  inline MessageBuilder& operator<<(const char* msg) {
+    m_logger->stream() << msg;
+    if (ELPP->hasFlag(LoggingFlag::AutoSpacing)) {
+      m_logger->stream() << " ";
+    }
+    return *this;
+  }  
   inline MessageBuilder& operator<<(const std::wstring& msg) {
     return operator<<(msg.c_str());
   }
@@ -3626,7 +3635,10 @@ class CrashHandler {
 #endif // defined(ELPP_FEATURE_ALL) || defined(ELPP_FEATURE_CRASH_LOG)
 }  // namespace debug
 }  // namespace base
-extern base::debug::CrashHandler elCrashHandler;
+
+el::base::debug::CrashHandler& GetCrashHandler();
+
+//extern base::debug::CrashHandler elCrashHandler;
 #define MAKE_LOGGABLE(ClassType, ClassInstance, OutputStreamInstance) \
 el::base::type::ostream_t& operator<<(el::base::type::ostream_t& OutputStreamInstance, const ClassType& ClassInstance)
 /// @brief Initializes syslog with process ID, options and facility. calls closelog() on d'tor
@@ -3680,7 +3692,8 @@ class Helpers : base::StaticClass {
   /// @param crashHandler A functor with no return type that takes single int argument.
   ///        Handler is a typedef with specification: void (*Handler)(int)
   static inline void setCrashHandler(const el::base::debug::CrashHandler::Handler& crashHandler) {
-    el::elCrashHandler.setHandler(crashHandler);
+    GetCrashHandler().setHandler(crashHandler);
+    //el::elCrashHandler.setHandler(crashHandler);
   }
   /// @brief Abort due to crash with signal in parameter
   /// @param sig Crash signal

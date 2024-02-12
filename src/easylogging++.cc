@@ -17,9 +17,25 @@ INITIALIZE_EASYLOGGINGPP
 #endif
 
 namespace el {
+static el::base::debug::CrashHandler elCrashHandler(ELPP_USE_DEF_CRASH_HANDLER);
+el::base::debug::CrashHandler& GetCrashHandler() {
+  return elCrashHandler;
+}
+
+namespace base {
+static el::base::type::StoragePointer elStorage;
+el::base::type::StoragePointer& GetStorage() {
+  return elStorage;
+}
+
+}}
+
+namespace el {
 
 // el::base
 namespace base {
+
+
 // el::base::consts
 namespace consts {
 
