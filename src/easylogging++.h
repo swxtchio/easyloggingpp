@@ -12,6 +12,23 @@
 
 #ifndef EASYLOGGINGPP_H
 #define EASYLOGGINGPP_H
+
+// Force std threading if the threading defines are not set
+#ifndef ELPP_THREAD_SAFE
+  #define ELPP_THREAD_SAFE  1
+#else
+  #if (ELPP_THREAD_SAFE == 0)
+    #undef ELPELPP_THREAD_SAFE
+  #endif
+#endif
+#ifndef ELPP_USE_STD_THREADING
+  #define ELPP_USE_STD_THREADING  1
+#else
+  #if (ELPP_USE_STD_THREADING == 0)
+    #undef ELPP_USE_STD_THREADING
+  #endif
+#endif
+
 // Compilers and C++0x/C++11 Evaluation
 #if __cplusplus >= 201103L
 #  define ELPP_CXX11 1
